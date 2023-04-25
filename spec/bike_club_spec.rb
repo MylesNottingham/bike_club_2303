@@ -16,13 +16,6 @@ RSpec.describe BikeClub do
     @biker_1.log_ride(@ride_1, 91.1)
     @biker_1.log_ride(@ride_2, 60.9)
     @biker_1.log_ride(@ride_2, 61.6)
-
-    @biker_2.learn_terrain!(:gravel)
-    @biker_2.learn_terrain!(:hills)
-    @biker_2.log_ride(@ride_1, 97.0)
-    @biker_2.log_ride(@ride_2, 67.0)
-    @biker_2.log_ride(@ride_1, 95.0)
-    @biker_2.log_ride(@ride_2, 65.0)
   end
 
   describe "#initialize" do
@@ -49,6 +42,12 @@ RSpec.describe BikeClub do
 
   describe "#most_rides" do
     it "can return the biker with the most rides" do
+      @biker_2.learn_terrain!(:gravel)
+      @biker_2.learn_terrain!(:hills)
+      @biker_2.log_ride(@ride_1, 97.0)
+      @biker_2.log_ride(@ride_2, 67.0)
+      @biker_2.log_ride(@ride_1, 95.0)
+      @biker_2.log_ride(@ride_2, 65.0)
       @bike_club.add_biker(@biker_1)
       @bike_club.add_biker(@biker_2)
 
@@ -70,6 +69,12 @@ RSpec.describe BikeClub do
 
   describe "best_time(ride)" do
     it "can return the biker with the best time for a given ride" do
+      @biker_2.learn_terrain!(:gravel)
+      @biker_2.learn_terrain!(:hills)
+      @biker_2.log_ride(@ride_1, 97.0)
+      @biker_2.log_ride(@ride_2, 67.0)
+      @biker_2.log_ride(@ride_1, 95.0)
+      @biker_2.log_ride(@ride_2, 65.0)
       @bike_club.add_biker(@biker_1)
       @bike_club.add_biker(@biker_2)
 
@@ -91,16 +96,52 @@ RSpec.describe BikeClub do
     end
   end
 
-  describe "#have_ridden(ride)" do
+  describe "bikers_eligible(ride)" do
+    it "can return all bikers who are eligible for a given ride" do
+      @bike_club.add_biker(@biker_1)
+      @bike_club.add_biker(@biker_2)
+
+      expect(@biker_1.max_distance).to eq(30)
+      expect(@biker_1.acceptable_terrain).to eq([:gravel, :hills])
+      expect(@biker_2.max_distance).to eq(15)
+      expect(@biker_2.acceptable_terrain).to eq([])
+
+      expect(@ride_1.total_distance).to eq(21.4)
+      expect(@ride_1.terrain).to eq(:hills)
+      expect(@ride_2.total_distance).to eq(14.9)
+      expect(@ride_2.terrain).to eq(:gravel)
+
+      expect(@bike_club.bikers_eligible(@ride_1)).to eq([@biker_1])
+      expect(@bike_club.bikers_eligible(@ride_2)).to eq([@biker_1])
+
+      @biker_2.learn_terrain!(:hills)
+
+      expect(@bike_club.bikers_eligible(@ride_1)).to eq([@biker_1])
+      expect(@bike_club.bikers_eligible(@ride_2)).to eq([@biker_1])
+
+      @biker_2.learn_terrain!(:gravel)
+
+      expect(@bike_club.bikers_eligible(@ride_1)).to eq([@biker_1])
+      expect(@bike_club.bikers_eligible(@ride_2)).to eq([@biker_1, @biker_2])
+    end
+  end
+
+  describe "#bikers_have_ridden(ride)" do
     it "can return all bikers who have ridden a given ride" do
+      @biker_2.learn_terrain!(:gravel)
+      @biker_2.learn_terrain!(:hills)
+      @biker_2.log_ride(@ride_1, 97.0)
+      @biker_2.log_ride(@ride_2, 67.0)
+      @biker_2.log_ride(@ride_1, 95.0)
+      @biker_2.log_ride(@ride_2, 65.0)
       @bike_club.add_biker(@biker_1)
       @bike_club.add_biker(@biker_2)
 
       expect(@biker_1.rides).to eq({ @ride_1 => [92.5, 91.1], @ride_2 => [60.9, 61.6] })
       expect(@biker_2.rides).to eq({ @ride_2 => [67.0, 65.0] })
 
-      expect(@bike_club.have_ridden(@ride_1)).to eq([@biker_1])
-      expect(@bike_club.have_ridden(@ride_2)).to eq([@biker_1, @biker_2])
+      expect(@bike_club.bikers_have_ridden(@ride_1)).to eq([@biker_1])
+      expect(@bike_club.bikers_have_ridden(@ride_2)).to eq([@biker_1, @biker_2])
     end
   end
 end
