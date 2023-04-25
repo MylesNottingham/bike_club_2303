@@ -57,14 +57,50 @@ RSpec.describe BikeClub do
 
       expect(@bike_club.most_rides).to eq(@biker_1)
 
-      @biker_2.log_ride(@ride_2, 63.0)
       @biker_2.log_ride(@ride_2, 62.0)
-      @biker_2.log_ride(@ride_2, 75.0)
+      @biker_2.log_ride(@ride_2, 61.0)
+      @biker_2.log_ride(@ride_2, 60.0)
 
       expect(@biker_1.rides).to eq({ @ride_1 => [92.5, 91.1], @ride_2 => [60.9, 61.6] })
-      expect(@biker_2.rides).to eq({ @ride_2 => [67.0, 65.0, 63.0, 62.0, 75.0] })
+      expect(@biker_2.rides).to eq({ @ride_2 => [67.0, 65.0, 62.0, 61.0, 60.0] })
 
       expect(@bike_club.most_rides).to eq(@biker_2)
+    end
+  end
+
+  describe "best_time(ride)" do
+    it "can return the biker with the best time for a given ride" do
+      @bike_club.add_biker(@biker_1)
+      @bike_club.add_biker(@biker_2)
+
+      expect(@biker_1.rides).to eq({ @ride_1 => [92.5, 91.1], @ride_2 => [60.9, 61.6] })
+      expect(@biker_2.rides).to eq({ @ride_2 => [67.0, 65.0] })
+
+      expect(@bike_club.best_time(@ride_1)).to eq(@biker_1)
+      expect(@bike_club.best_time(@ride_2)).to eq(@biker_1)
+
+      @biker_2.log_ride(@ride_2, 62.0)
+      @biker_2.log_ride(@ride_2, 61.0)
+      @biker_2.log_ride(@ride_2, 60.0)
+
+      expect(@biker_1.rides).to eq({ @ride_1 => [92.5, 91.1], @ride_2 => [60.9, 61.6] })
+      expect(@biker_2.rides).to eq({ @ride_2 => [67.0, 65.0, 62.0, 61.0, 60.0] })
+
+      expect(@bike_club.best_time(@ride_1)).to eq(@biker_1)
+      expect(@bike_club.best_time(@ride_2)).to eq(@biker_2)
+    end
+  end
+
+  describe "#have_ridden(ride)" do
+    it "can return all bikers who have ridden a given ride" do
+      @bike_club.add_biker(@biker_1)
+      @bike_club.add_biker(@biker_2)
+
+      expect(@biker_1.rides).to eq({ @ride_1 => [92.5, 91.1], @ride_2 => [60.9, 61.6] })
+      expect(@biker_2.rides).to eq({ @ride_2 => [67.0, 65.0] })
+
+      expect(@bike_club.have_ridden(@ride_1)).to eq([@biker_1])
+      expect(@bike_club.have_ridden(@ride_2)).to eq([@biker_1, @biker_2])
     end
   end
 end
