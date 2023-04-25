@@ -14,4 +14,12 @@ class BikeClub
   def most_rides
     @bikers.max_by { |biker| biker.rides.values.flatten.count }
   end
+
+  def best_time(ride)
+    have_ridden(ride).min_by { |biker| biker.personal_record(ride) }
+  end
+
+  def have_ridden(ride)
+    @bikers.find_all { |biker| biker.rides.keys.include?(ride) }
+  end
 end
